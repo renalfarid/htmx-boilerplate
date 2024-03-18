@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/assets/css/tailwind.min.css" rel="stylesheet">
+
+    <script src="/assets/js/htmx.min.js"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
+
+
+    <title>Htmx Project</title>
+</head>
+<body>
+    <div class="mb-5">
+        <h1>htmx project</h1>
+    </div>
+    <div class="flex items-center justify-center" hx-get="https://jsonplaceholder.typicode.com/posts" hx-trigger="load" hx-target="#tableData">
+        <img alt="Result loading..." class="htmx-indicator animate-spin opacity-0 transition-opacity duration-300 ease-in w-12" src="/assets/images/refresh.svg"/>
+    </div>
+    <div id="data" class="mt-12 shadow-sm border rounded-lg overflow-x-auto">
+      <table class="w-full table-auto text-sm text-left">
+        <thead class="bg-gray-50 text-gray-600 font-medium border-b">
+        <tr>
+            <th class="py-3 px-3">ID</th>
+            <th class="py-3 px-6">User Id</th>
+            <th class="py-3 px-6">Title</th>
+            <th class="py-3 px-6">Body</th>
+        </tr>
+        </thead>
+        <tbody id="tableData" class="text-gray-600 divide-y">
+        </tbody>
+      </table>
+    </div>
+    <script>
+        document.addEventListener('htmx:afterSettle', function(event) {
+            var html = ""
+          var xhr = event.detail.xhr;
+            if (!xhr) {
+                console.error("XHR object is undefined");
+                return;
+            }
+            var responseData = xhr.responseText;
+            console.log("Response Data:", responseData);
+
+            try {
+                var data = JSON.parse(responseData);
+                data.forEach(function(item, idx) {
+                html += `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">${item.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${item.userId}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${item.title}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">${item.body}</td>
+                    </tr>
+                `;
+                });
+                document.querySelector("#tableData").innerHTML = html;
+              //document.querySelector("#data #tbody").innerHTML = html;
+            } catch (error) {
+              console.error("Error parsing JSON response:", error);
+            }
+
+    });
+    </script>
+</body>
+</html>
